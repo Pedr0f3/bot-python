@@ -1,10 +1,56 @@
 import discord
+import google.generativeai as genai
 from discord.ext import commands
 from time import sleep
 from random import randint, choice
 
 bot = commands.Bot(command_prefix="", intents=discord.Intents.all()) # prefixo e intents
-TOKEN = ''  # importa o TOKEN
+TOKEN = '  # importa o TOKEN
+
+
+
+
+
+
+
+GEMINI_API_KEY = ''
+genai.configure(api_key=GEMINI_API_KEY)
+
+generation_config = {
+    'candidate_count': 1,
+    'temperature': 1,
+    'max_output_tokens': 50,
+}
+
+model = genai.GenerativeModel(
+    model_name='gemini-1.0-pro',
+    generation_config=generation_config
+)
+
+chat = model.start_chat(history=[])
+
+responded_messages = set()
+
+
+async def buscar_historico_canal(canal, limit=1):
+    messages_list = []
+    async for message in canal.history(limit=limit):
+        if message.author != bot.user:  # Exclude bot's own messages
+            messages_list.append(message)
+    messages_list.reverse()  # Ensure chronological order
+    return messages_list
+
+def ask_gemini(mensagens):
+    response = chat.send_message(f"Reponda de forma alegre, brincalhona e ironica: {mensagens}")
+    return response.text
+
+
+
+
+
+
+
+
 
 @bot.event
 async def on_ready():
@@ -14,6 +60,28 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
+
+
+
+
+
+    if message.mentions and bot.user in message.mentions:
+        async with message.channel.typing():
+            historico = await buscar_historico_canal(message.channel, limit=1)
+            for msg in historico:
+                if msg.id not in responded_messages:
+                    msg_content = msg.content
+                    for mention in msg.mentions:
+                        if mention == bot.user:
+                            msg_content = msg_content.replace(f"<@{mention.id}>", "").strip()
+                    if msg_content:  # Only send non-empty messages
+                        resposta = ask_gemini(msg_content)
+                        await message.reply(resposta)
+                        responded_messages.add(msg.id)  # Mark this message as responded
+
+
+
+
 
     global conteudo, l_conteudo, mensagem, responda  # SALVA VIDASS, define elas como globais, posso usar no code tod
     conteudo = message.content.lower()
@@ -92,10 +160,10 @@ async def on_message(message):
         resp = ['Cala boca já morreu.... quem manda na minha boca sou eu...', 'Vem calar se tu for homem....', 'Qual foi, tá doidão????']
         await responda(choice(resp))
 
-    if conteudo.startswith('<@'):
+    """if conteudo.startswith('<@'):
         resp = ['Para de marcar as pessoas seu chato...', 'Eita como marca....', 'Menino chato... não para de marcar os outros...',
                 'Mah rapaz... um sol quente desse e tu aí marcando os outros... vai pa tua casa, vai....']
-        await responda(choice(resp))
+        await responda(choice(resp))"""
 
     if conteudo.startswith('jogar'):
         resp = [f'Discordianos de plantão @here, ajudem a pobre criança, {message.author.name}, ela quer jogar e não'
