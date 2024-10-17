@@ -1,1 +1,5 @@
 discord.py
+google~=3.0.0
+google.generativeai
+google-auth
+google-auth-oauthlib

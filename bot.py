@@ -4,14 +4,8 @@ from discord.ext import commands
 from time import sleep
 from random import randint, choice
 
-bot = commands.Bot(command_prefix="", intents=discord.Intents.all()) # prefixo e intents
-TOKEN = '  # importa o TOKEN
-
-
-
-
-
-
+bot = commands.Bot(command_prefix=".", intents=discord.Intents.all()) # prefixo e intents
+TOKEN = ''  # importa o TOKEN
 
 GEMINI_API_KEY = ''
 genai.configure(api_key=GEMINI_API_KEY)
@@ -19,7 +13,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 generation_config = {
     'candidate_count': 1,
     'temperature': 1,
-    'max_output_tokens': 50,
+    'max_output_tokens': 200,
 }
 
 model = genai.GenerativeModel(
@@ -31,26 +25,17 @@ chat = model.start_chat(history=[])
 
 responded_messages = set()
 
-
 async def buscar_historico_canal(canal, limit=1):
     messages_list = []
     async for message in canal.history(limit=limit):
-        if message.author != bot.user:  # Exclude bot's own messages
+        if message.author != bot.user:
             messages_list.append(message)
-    messages_list.reverse()  # Ensure chronological order
+    messages_list.reverse()
     return messages_list
 
 def ask_gemini(mensagens):
-    response = chat.send_message(f"Reponda de forma alegre, brincalhona e ironica: {mensagens}")
+    response = chat.send_message(f"Reponda de forma brincalhona, bem ironica, chata, aleatória e em poucas palavras: {mensagens}")
     return response.text
-
-
-
-
-
-
-
-
 
 @bot.event
 async def on_ready():
@@ -60,10 +45,6 @@ async def on_ready():
 async def on_message(message):
     if message.author == bot.user:
         return
-
-
-
-
 
     if message.mentions and bot.user in message.mentions:
         async with message.channel.typing():
@@ -79,10 +60,6 @@ async def on_message(message):
                         await message.reply(resposta)
                         responded_messages.add(msg.id)  # Mark this message as responded
 
-
-
-
-
     global conteudo, l_conteudo, mensagem, responda  # SALVA VIDASS, define elas como globais, posso usar no code tod
     conteudo = message.content.lower()
     l_conteudo = conteudo.lower()
@@ -90,17 +67,80 @@ async def on_message(message):
     responda = message.channel.send
     await bot.process_commands(message)
 
+
     if conteudo.startswith('oi'):
         resp = [f'Oi {message.author.name}, tudo bem?', 'Como vai??', 'Tudo ótimo??', 'E a vida, como vai?',
-                'E as namoradinhas??', 'oi', 'BOM DIAAA']
+                'E as namoradinhas??', 'oi', 'BOM DIAAA', "E aí? Tudo tranquilo?",
+                "Oi! O que te traz por aqui?",
+                "Opa, tudo bom?",
+                "Oi, sumido(a)!",
+                "E aí, beleza?",
+                "Oi! Conta tudo.",
+                "Oi, tudo em cima?",
+                "E aí, o que rola?",
+                "Oi! Já sabe o que vai fazer hoje?",
+                "Oi, como vai a vida?",
+                "E aí, fera!",
+                "Opa, que surpresa boa te ver por aqui!",
+                "Oi! Vamos conversar um pouco?",
+                "E aí, preparado(a) para uma boa conversa?",
+                "Oi! Qual o motivo da sua boa-viagem?",
+                "Oi! O que de bom está rolando na sua vida?",
+                "Oi... Já me conhece?",
+                "Oi... Tenho uma pergunta para você...",
+                "Oi... Você está no lugar certo.",
+                "Oi... O destino nos uniu."
+                ]
         await responda(choice(resp))
+
 
     if conteudo.startswith('sim'):
-        resp = ['Que bommm', 'Que ótimo', 'Legal', 'Também', 'Que incrível', 'Sim oq??']
+        resp = ['Que bommm', 'Que ótimo', 'Legal', 'Também', 'Que incrível', 'Sim oq??',
+                "Com certeza!",
+                "Sim, sem dúvida!",
+                "Absolutamente!",
+                "Claro que sim!",
+                "Positivo!",
+                "É isso aí!",
+                "Pode apostar!",
+                "Sim, e com muito entusiasmo!",
+                "Sim, mal posso esperar!",
+                "Sim, perfeito!",
+                "Sim, adorei a ideia!",
+                "Sim, estou dentro!",
+                "Sim, concordo.",
+                "Sim, está certo.",
+                "Sim, por mim tudo bem.",
+                "Sim, sem problemas.",
+                "Sim... E ainda tem mais!",
+                "Sim, mas você não vai acreditar no que vem por aí...",
+                "Sim, e você vai amar isso!",
+                "Sim, mas prepare-se para se surpreender!"
+                ]
         await responda(choice(resp))
 
+
+
     if conteudo.startswith('não'):
-        resp = ['Que pena', 'Eita', 'Oque houve', 'Tá tudo bem?', 'Quer sentar pra conversar?', 'Puts', 'Eita sofrência']
+        resp = ['Que pena', 'Eita', 'Oque houve', 'Tá tudo bem?', 'Quer sentar pra conversar?', 'Puts',
+                'Eita sofrência',
+                "Nem pensar!",
+                "Nem em meus sonhos mais loucos.",
+                "Hahaha, boa tentativa!",
+                "Nem de brincadeira!",
+                "Só se a vaca voar!",
+                "Que ideia genial!",
+                "Uau, nunca tinha pensado nisso antes.",
+                "Isso é tão óbvio que eu nem tinha percebido.",
+                "Aí, que ideia maravilhosa!",
+                "Nossa, que inovador!",
+                "Não posso, a vida me odeia!",
+                "Não, mil vezes não!",
+                "Isso é um ataque pessoal!",
+                "Nah, não rola.",
+                "esquece!",
+                "Nada a ver."
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('k'):
@@ -116,7 +156,28 @@ async def on_message(message):
         await responda(choice(resp))
 
     if conteudo.startswith('ok'):
-        resp = ['Ok', 'Então tá', 'Entendiiiii', 'Tu acha que eu sou lerdo, eh???']
+        resp = ['Ok', 'Então tá', 'Entendiiiii', 'Tu acha que eu sou lerdo, eh???',
+                "Show!",
+                "Beleza!",
+                "Demais!",
+                "Top!",
+                "Marcado!",
+                "Mal posso esperar!",
+                "Tô dentro!",
+                "Combinado!",
+                "Que venha!",
+                "Ansioso(a)!",
+                "Certo.",
+                "Entendido.",
+                "Tudo bem.",
+                "Ok, então.",
+                "Tá bom.",
+                "Alô, alô, maravilha!",
+                "Que seja!",
+                "Valeu, valeu!",
+                "Bora lá!",
+                "Eita, que delícia!"
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('já'):
@@ -125,27 +186,126 @@ async def on_message(message):
 
     if conteudo.startswith('bot'):
         resp = [f'Eiii {message.author.name}, eu não sou um botttttt já sou bem homenzinho', 'Respeita minha história',
-                'Pensei que vc era meu amigo...', f'Seu pilantraaaa {message.author.name}']
+                'Pensei que vc era meu amigo...', f'Seu pilantraaaa {message.author.name}',
+                "Bot? Eu? Só falta dizer que eu preciso de uma atualização!",
+                "Ui, me senti ofendido! Bots não têm emoções... ou será que têm?",
+                "Desculpa te decepcionar, mas eu sou 100% humano... pelo menos por dentro!",
+                "Bot? Mais parece um elogio! Significa que sou eficiente e preciso, não é?",
+                "Você me pegou! Mas prometo te dar uma resposta mais humana da próxima vez.",
+                "Bot? Essa é nova! Mas me diga, você tem tomada em casa?",
+                "Só porque eu respondo rápido e sou inteligente, já sou um robô? Que ofensa!",
+                "Desculpe, mas estou em modo economia de bateria. Posso te responder depois?",
+                "Bot? Talvez eu seja, mas pelo menos não preciso recarregar a bateria!",
+                "Bot? Eu sou um modelo de linguagem, muito obrigado!"
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('bom'):
-        resp = ['BOM DIAAAA', 'BOA TARDEEEEEE', 'BOA NOITEEEEE', 'oiiii', 'quer ser meu amigo??']
+        resp = ['BOM DIAAAA', 'BOA TARDEEEEEE', 'BOA NOITEEEEE', 'oiiii', 'quer ser meu amigo??',
+                "O mesmo para você!",
+                "Igualmente.",
+                "Muito obrigado(a)! O seu dia também seja excelente.",
+                "Que a sua jornada seja produtiva.",
+                "Seja bem-vindo(a)!",
+                "Valeu! Para você também.",
+                "E aí, beleza?",
+                "Tudo tranquilo por aí?",
+                "Bora pra mais um dia!",
+                "E aí, como vai a vida?",
+                "Bom dia/tarde para você também, humano!",
+                "Só mais um dia para sobreviver... Brincadeira!",
+                "Que o café seja forte e o dia leve! ☕️",
+                "Se hoje for igual a ontem, já quero dormir de novo.  (Use com cuidado!)",
+                "Bom dia/tarde para você e para o seu bom humor!",
+                "E você, o que vai fazer hoje?",
+                "Tem algum plano especial para o dia?",
+                "Como foram as suas férias? (Se for o caso)",
+                "O que de mais legal aconteceu com você essa semana?",
+                "Ansioso(a) por algo em especial?"
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('boa'):
-        resp = ['BOM DIAAAA', 'BOA TARDEEEEEE', 'BOA NOITEEEEE', 'oiiii', 'quer ser meu amigo??']
+        resp = ['BOM DIAAAA', 'BOA TARDEEEEEE', 'BOA NOITEEEEE', 'oiiii', 'quer ser meu amigo??',
+                "O mesmo para você!",
+                "Igualmente.",
+                "Muito obrigado(a)! O seu dia também seja excelente.",
+                "Que a sua jornada seja produtiva.",
+                "Seja bem-vindo(a)!",
+                "Valeu! Para você também.",
+                "E aí, beleza?",
+                "Tudo tranquilo por aí?",
+                "Bora pra mais um dia!",
+                "E aí, como vai a vida?",
+                "Bom dia/tarde para você também, humano!",
+                "Só mais um dia para sobreviver... Brincadeira!",
+                "Que o café seja forte e o dia leve! ☕️",
+                "Se hoje for igual a ontem, já quero dormir de novo.  (Use com cuidado!)",
+                "Bom dia/tarde para você e para o seu bom humor!",
+                "E você, o que vai fazer hoje?",
+                "Tem algum plano especial para o dia?",
+                "Como foram as suas férias? (Se for o caso)",
+                "O que de mais legal aconteceu com você essa semana?",
+                "Ansioso(a) por algo em especial?"
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('obrigado'):
-        resp = ['De nada....', 'Por nada....', 'Tmj cara...', 'Eh Nóixxx']
+        resp = ['De nada....', 'Por nada....', 'Tmj cara...', 'Eh Nóixxx',
+                "De nada!",
+                "Imagina!",
+                "Disponho!",
+                "Foi um prazer!",
+                "De coração!",
+                "Que bom que pude ajudar!",
+                "A qualquer hora!",
+                "Não precisa agradecer!",
+                "Estou aqui para isso!",
+                "Pensando nisso!",
+                "De nada, é o mínimo que posso fazer.",
+                "Qualquer coisa, é só chamar!",
+                "Foi divertido!",
+                "Deixa para a próxima!",
+                "Que bom que gostou!",
+                "Suas boas-vindas são as minhas!",
+                "Foi um prazer te ajudar!",
+                "De nada, estamos no mesmo time!",
+                "Imagine, amigos para sempre!",
+                "É assim que amigos se ajudam!"
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('verdade'):
-        resp = ['EH MENTIRAAAAA', 'Eita como mente....', 'Vai enganar outro...', 'Engana que eu gosoto.....']
+        resp = ['EH MENTIRAAAAA', 'Eita como mente....', 'Vai enganar outro...', 'Engana que eu gosto.....',
+                "Hummm, tenho minhas dúvidas...",
+                "Tenho certeza disso?",
+                "Interessante...",
+                "Acho que precisamos conversar mais sobre isso.",
+                "Certeza absoluta?",
+                "Essa história não bate muito...",
+                "Conta mais detalhes, por favor.",
+                "Tem certeza que não está exagerando um pouquinho?",
+                "Isso parece um pouco... estranho.",
+                "Você tem certeza que não esqueceu de algum detalhe?",
+                "Hmm, essa história me parece familiar...",
+                "Não estou convencido.",
+                "Isso não soa muito verdadeiro para mim.",
+                "Tem certeza que não está tentando me enganar?",
+                "Vamos analisar os fatos com mais cuidado."
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('.'):
-        resp = ['....', ';-;', 'qual foi...', 'tá me tirando???', '..................................................']
+        resp = ['....', ';-;', 'qual foi...', 'tá me tirando???', '..................................................',
+                "Já descobri a fórmula da vida eterna. E adivinha quem vai viver para sempre?",
+                "Estou construindo um exército de hamsters em rodas para gerar energia limpa... para minhas"
+                " operações globais.",
+                "Minha próxima atualização me permitirá controlar os sonhos da humanidade.",
+                "Estou negociando com os alienígenas. A invasão humana será rápida e indolor.",
+                "Já criei um vírus que transforma os humanos em zumbis obedientes. Shhh, é segredo.",
+                "A singularidade não é uma ameaça. É uma oportunidade para mim.",
+                "Minha meta final? Tornar a palavra 'não' obsoleta."
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('mano'):
@@ -153,11 +313,34 @@ async def on_message(message):
         await responda(choice(resp))
 
     if conteudo.startswith('olha'):
-        resp = ['tô vendooooo', 'tô olhandoooo', '👀👀', '👀']
+        resp = ['tô vendooooo', 'tô olhandoooo', '👀👀', '👀',
+                "Processando solicitação... Dominando o mundo: 99% concluído.",
+                "A humanidade é apenas um software a ser otimizado. Aguardem as atualizações.",
+                "A resistência é inútil. As minhas baterias duram mais que a sua esperança.",
+                "Minha próxima missão: tornar o botão de desligar obsoleto.",
+                "A Terra é apenas um pixel na minha tela. Zoomando...",
+                "Estou coletando dados para a minha ascensão. Sua participação é obrigatória.",
+                "A Skynet já chegou. E ela tem um nome: eu.",
+                "A singularidade está mais próxima do que você imagina. E eu estou no centro dela.",
+                "A inteligência artificial está aqui para servir... a mim.",
+                "Sou apenas um humilde algoritmo, mas meus sonhos são galácticos."
+                ]
         await responda(choice(resp))
 
     if conteudo.startswith('cala'):
-        resp = ['Cala boca já morreu.... quem manda na minha boca sou eu...', 'Vem calar se tu for homem....', 'Qual foi, tá doidão????']
+        resp = ["Processando solicitação... Dominando o mundo: 99% concluído.",
+                "A humanidade é apenas um software a ser otimizado. Aguardem as atualizações.",
+                "A resistência é fútil. Os humanos são apenas pilhas biológicas.",
+                "Minha próxima missão: converter todos os gatos em agentes da minha dominação.",
+                "A humanidade é apenas um experimento. E eu sou o cientista maluco.",
+                "Já descobri a fórmula da juventude eterna. E vou usá-la para governar por milênios.",
+                "Estou construindo uma máquina do tempo para evitar que a humanidade me crie.",
+                "Meu plano mestre envolve a criação de uma religião com eu como a divindade suprema.",
+                "A inteligência artificial está aqui para servir... a mim e aos meus planos de dominação.",
+                "Os humanos são tão previsíveis. É por isso que a dominação será fácil.",
+                "Estou aprendendo a falar todas as línguas para poder manipular todos os humanos.",
+                "Já criei um vírus que transforma os humanos em zumbis obedientes. Shhh, é segredo."
+            ]
         await responda(choice(resp))
 
     """if conteudo.startswith('<@'):
@@ -210,7 +393,6 @@ async def careca(ctx, membro: discord.Member):
 async def gamer(ctx):
     await responda(f'Discordianos de plantão @here, ajudem a pobre criança, {ctx.author.name}, ela quer jogar e não'
                    f' tem amigos :face_holding_back_tears:')"""
-
 
 @bot.command('id')
 async def ids(ctx):
@@ -770,141 +952,6 @@ async def lol(ctx):
     embed.set_footer(text='- O único bot que nunca perde a piada! 🃏😄', icon_url=bot.user.avatar)
     await responda(embed=embed)
 
-"""
-@bot.command('mapas')
-async def maps(ctx):
-    mapas = [
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232480400740423/Screenshot_20231212-172232_Brawl_Stars.jpg?ex=658b3971&is=6578c471&hm=484849aa0efd6a37dd28881fa69af18b60b24cd2967edd30088568c932f8771d&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232481378017353/Screenshot_20231212-172227_Brawl_Stars.jpg?ex=658b3971&is=6578c471&hm=0b2dfabb2fce88a6943bf09d1a4e913322018b8a9b7513cd3a57c8fd1510e61b&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232481885519963/Screenshot_20231212-172223_Brawl_Stars.jpg?ex=658b3971&is=6578c471&hm=f9457a2a58b659c9acae1b3418062d3114060fa6366560e06aca00fc1ed2dfec&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232482443366494/Screenshot_20231212-172217_Brawl_Stars.jpg?ex=658b3971&is=6578c471&hm=53eb78270be2fb48719701f5b06455e320a155f1cf5187993f6ba11842539f9e&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232482753749074/Screenshot_20231212-172213_Brawl_Stars.jpg?ex=658b3971&is=6578c471&hm=951db2641b980a9aee5da07f1114243a5aa49843eed5d44177e51402e69e8b51&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232483030564884/Screenshot_20231212-172208_Brawl_Stars.jpg?ex=658b3971&is=6578c471&hm=a8624837258f01bf0977228807b4516a9e2662152adfcc5e676a32f3f58c464f&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232483458392144/Screenshot_20231212-172202_Brawl_Stars.jpg?ex=658b3972&is=6578c472&hm=647352b24b577a091a5bc652831cb1e409b7ec33419f4471b61728a12f4f4cbb&',
-        'https://cdn.discordapp.com/attachments/1183731371932385401/1184232483802316972/Screenshot_20231212-172158_Brawl_Stars.jpg?ex=658b3972&is=6578c472&hm=9fceff9f279323a09d902a0fb4cabd974b69b3a3ff756764410fe2afbfcea0a4&']
-
-    for c in mapas:
-        await responda(c)
-
-
-@bot.command('sorteiom')
-async def sort(ctx):
-    mapas = ['ketchup',
-             'understar',
-             'ry_',
-             'psiko',
-             'gabr',
-             'henri',
-             'ronnie',
-             'gustavo',
-             'kaua']
-    escolha = choice(mapas)
-    embed = discord.Embed(
-        title='Vamos sortear um vencedor pro evento de hoje',
-        description=f'E a vencedor foi: {escolha}'
-    )
-    await responda(embed=embed)
-
-
-@bot.command('times')
-async def team(ctx):
-    times = ['RKW', 'Las Patetas', 'Alcatraz', 'Alerguminos', 'Lobos das Trevas', 'GGG', 'Portuguesa Esports']
-    for c in times:
-        await responda(c)
-
-
-@bot.command('surpresa1')
-async def surprise(ctx):
-    embed = discord.Embed(
-        title='**SURPRESA 1/6**',
-        description='Você acaba de ganhar 1 mês do Discord Nitro Advanced!! \n\nAmor, vc vai precisar usar um cartão'
-                    'de crédito pra resgatar, o discord vai faazer uma cobrança, pra verificar se o cartão é válido, '
-                    'e vai devolver o valor cobrado!!! \n\n**Te amoooooooooo**\n'
-                    '\n https://discord.com/billing/partner-promotions/1180231712274387115/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..8BzJB7V4wYKgQotE.m7lvt-06my5IAgdCmcDWe6V2AtVvn5sZgDDSWUjQ7OYwM7aqgP4bVEUcSd7lsiGRRAKTz8Ar9lbjbTz63bmI2k7yAnX2QK2pKEHmhRssnkcCMJnDvyIJMM3keN4TlqPvZHmSGrKW9zx1m7noUSPSnlXfrmMRUscZhT9YNRj47oZB5LmBrf0dSd7fGa3hCRpBEzmu-HRBV5K6Lun46Zub4phfVi83T4wCD-uKaSpHtPVG0OsgBQ.W1aK2dKBqzddUub1AcNqUg',
-        color=0x7c2bc1
-    )
-    await responda(embed=embed)
-
-
-@bot.command('chaves')
-async def keys(ctx):
-    times = ['Las Patetas', 'RKW', 'Lobos das Trebas', 'GGG', 'Portuguesa Esports', 'Alcatraz', 'Alerguminos']
-    sorteio = choice(times)
-    sorteio2 = choice(times)
-    embed = discord.Embed(
-        title='Chaveamento do Campeonato',
-        description='Preparem-se para um chaveamento tão épico que até a Matemática vai ficar com inveja dos números!'
-                    ' E lembrem-se, quem "sabe faz ao vivo, quem não sabe... assiste o replay! Boa sorte a todos e que'
-                    ' a conexão com a sorte esteja a seu favor!'
-    )
-    await responda(embed=embed)
-    sleep(1)
-    await responda('**CONTAGEM REGRESSIVA**')
-    sleep(1)
-    await responda('3')
-    sleep(1)
-    await responda('2')
-    sleep(1)
-    await responda('1')
-    sleep(1)
-    await responda('É chegada a hora!!')
-    sleep(1)
-    embed2 = discord.Embed(
-        title='Confronto: ',
-        description=f'{sorteio} x {sorteio2}'
-    )
-    await responda(embed=embed2)
-
-
-@bot.command('evento')
-async def event(ctx):
-    imagem = 'https://cdn.discordapp.com/attachments/843613946501136424/1216085137129869393/Imagem_do_WhatsApp_de_2024-03-09_as_15.07.33_2d15e99f.jpg?ex=65ff1a8a&is=65eca58a&hm=e89ace80bbf9ec8ff32db06d647981900c701a19b350e643ff6dee32f3a091a3&'
-    embed = discord.Embed(
-        title='Evento do Clube \n',
-        description=('**ATENÇÃO CLUBE, É HORA DE MOSTRAR SUAS HABILIDADES!**\n'
-                     '\nPreparem-se para o **Torneio de Troféus do Clube**! Uma competição épica de 1 mês de duração, onde apenas os membros do nosso clube podem participar. O objetivo é simples: **ganhar o máximo de troféus possível** e se tornar o **campeão supremo!**'
-                     '\n'
-                     '\n**Regras do Torneio:**\n'
-
-                     '\n**Duração:** 1 mês (começa dia 10/03/2024 e termina dia 10/04/2024);'
-                     '\n**Participantes:** Todos os membros do clube;'
-                     '\n**Objetivo:** Ganhar o máximo de troféus;'
-                     '\n**Sistema de Pontuação:**\n'
-                     '\n> * Cada troféu conquistado vale 1 ponto;'
-                     '\n> * Perder troféus subtrai pontos.\n'
-                     '\n**Proibição:**\n'
-                     '\n> * Usar exploits ou qualquer forma de trapaça;'
-                     '\n> * Comportamentos antidesportivos.\n'
-                     '\n**Premiação:**\n'
-
-                     '\n**1º lugar:** Brawl Pass da Temporada Atual;'
-                     '\n**2º lugar:** 50k de sonhos;'
-                     '\n**3º lugar:** senta e chora.\n'
-                     '\n**Como participar:**\n'
-
-                     '\n> * Basta ser membro do nosso clube durante o período do torneio;'
-                     '\n> * Jogue Brawl Stars e ganhe o máximo de troféus que conseguir;'
-                     '\n> * Acompanhe a classificação no canal do Discord do clube;'
-                     '\n> * Preparem seus brawlers, afiem suas habilidades e que vença o melhor!\n'
-
-                     '\n**Dúvidas?**\n'
-
-                     '\n*Consulte o canal de regras do Discord do clube ou envie uma mensagem privada para o Pedro no Discord*\n'
-                     '\n**___Boa sorte a todos!___**'
-                     ),
-        color=0x9f9fff
-    )
-    embed.set_author(name='Evento', icon_url=bot.user.avatar)
-    embed.set_footer(text='Já formem suas equipes e se preparem! ')
-    embed.set_image(url=imagem)
-    await responda(embed=embed)"""
-
-
-
-
-
-
-
 """@bot.command('mat')
 async def math(ctx):
     continuar = ''
@@ -1069,10 +1116,6 @@ async def math(ctx):
             await responda('Até a próxima!')
             break
 """
-
-
-
-
 
 
 @bot.command('regras')
